@@ -3,11 +3,11 @@
 [void] [System.Reflection.Assembly]::LoadWithPartialName("PresentationFramework")
 [void] [Reflection.Assembly]::LoadWithPartialName("PresentationCore")
 
-$Form = New-Object System.Windows.Forms.Form    
-$Form.Size = New-Object System.Drawing.Size(900,400)
+$Form = New-Object System.Windows.Forms.Form
+$Form.Size = New-Object System.Drawing.Size(1200, 500)
 $Form.StartPosition = "CenterScreen" #loads the window in the center of the screen
 $Form.FormBorderStyle = [System.Windows.Forms.FormBorderStyle]::FixedToolWindow #modifies the window border
-$Form.Text = "Microsoft Office Installation Toool - www.bonguides.com" #window description
+$Form.Text = "winget setup" #window description
 $Form.ShowInTaskbar = $True
 $Form.KeyPreview = $True
 $Form.AutoSize = $True
@@ -17,366 +17,316 @@ $Form.MinimizeBox = $False
 $Form.ControlBox = $True
 $Form.Icon = $Icon
 
+# TODO automatically install winget if not installed
+# TODO improve UI
+# TODO improve error handling
 ############################################## Start functions
+function WinGetInstaller($Remove)
+{
+    try
+    {
+        $winGet = gci "C:\Program Files\WindowsApps" -Recurse -File -ErrorAction SilentlyContinue | Where-Object { $_.name -like "AppInstallerCLI.exe" -or $_.name -like "WinGet.exe" } | Select-Object -ExpandProperty fullname -ErrorAction SilentlyContinue
+        # If there are multiple versions, select latest
+        if ($winGet.count -gt 1)
+        {
+            $winGet = $winGet[-1]
+        }
+        $winGetLoc = [string]((get-item $winGet).Directory.FullName)
+        $install = {
+            Write-Host "Installing $id ..."
+            & "$winGetLoc\winget.exe" install --id =$id -e --silent --accept-source-agreements --accept-package-agreements
+        }
+        $uninstall = {
+            Write-Host "Removing $id ..."
+            & "$winGetLoc\winget.exe" uninstall --id =$id -e --silent
+        }
 
-function WinGetInstaller {
-try {
-   
-$winGet = gci "C:\Program Files\WindowsApps" -Recurse -File -ErrorAction SilentlyContinue | Where-Object { $_.name -like "AppInstallerCLI.exe" -or $_.name -like "WinGet.exe" } | Select-Object -ExpandProperty fullname -ErrorAction SilentlyContinue
+        $ids = @()
 
-# If there are multiple versions, select latest
-if ($winGet.count -gt 1){
-    $winGet = $winGet[-1]
-}
-$winGetLoc = [string]((get-item $winGet).Directory.FullName)
+        # Browsers
+        $ids += 'Brave.Brave' | Where-Object { $bravecb.Checked }
+        $ids += 'Google.Chrome' | Where-Object { $chromecb.Checked }
+        $ids += 'Mozilla.Firefox' | Where-Object { $firefoxcb.Checked }
+        $ids += 'TorProject.TorBrowser' | Where-Object { $torcb.Checked }
+        $ids += 'Microsoft.Edge' | Where-Object { $edgecb.Checked }
+        $ids += 'Opera.Opera' | Where-Object { $operacb.Checked }
+        $ids += 'VivaldiTechnologies.Vivaldi' | Where-Object { $vivaldicb.Checked }
 
-$install = {
-    Write-Host "Installing $id ..."
-    & "$winGetLoc\winget.exe" install --id=$id -e --silent --accept-source-agreements --accept-package-agreements
-}   
-    
-$ids=@()
-    if ($chromecb.Checked -eq $true) {$ids += 'Google.Chrome'}
-    if ($firefoxcb.Checked -eq $true) {$ids += 'Mozilla.Firefox'}
-    if ($bravecb.Checked -eq $true) {$ids += 'Brave.Brave'}
-    if ($edgecb.Checked -eq $true) {$ids += 'Microsoft.Edge'}
+        # Comunications
+        $ids += 'Telegram.TelegramDesktop' | Where-Object { $telegramcb.Checked }
+        $ids += 'WhatsApp.WhatsApp' | Where-Object { $whatsappcb.Checked }
+        $ids += 'SlackTechnologies.Slack' | Where-Object { $slackcb.Checked }
+        $ids += 'Discord.Discord' | Where-Object { $discordcb.Checked }
+        $ids += 'Mattermost.MattermostDesktop' | Where-Object { $mattermostcb.Checked }
+        $ids += 'TeamSpeakSystems.TeamSpeakClient' | Where-Object { $teamspeakcb.Checked }
+        $ids += 'Zoom.Zoom' | Where-Object { $zoomcb.Checked }
+        $ids += 'Microsoft.Skype' | Where-Object { $skypecb.Checked }
+        $ids += 'Microsoft.Teams' | Where-Object { $teamscb.Checked }
+        $ids += 'AnyDeskSoftwareGmbH.AnyDesk' | Where-Object { $anydeskcb.Checked }
+        $ids += 'TeamViewer.TeamViewer' | Where-Object { $teamviewercb.Checked }
 
-    if ($discordcb.Checked -eq $true) {$ids += 'Discord.Discord'}
-    if ($skypecb.Checked -eq $true) {$ids += 'Microsoft.Skype'}
-    if ($slackcb.Checked -eq $true) {$ids += 'SlackTechnologies.Slack'}
-    if ($telegramcb.Checked -eq $true) {$ids += 'Telegram.TelegramDesktop'}
-    if ($teamscb.Checked -eq $true) {$ids += 'Microsoft.Teams'}
-    if ($vibercb.Checked -eq $true) {$ids += 'Viber.Viber'}
-    if ($zoomcb.Checked -eq $true) {$ids += 'Zoom.Zoom'}
+        # Development
+        $ids += 'Git.Git' | Where-Object { $gitcb.Checked }
+        $ids += 'Fork.Fork' | Where-Object { $forkcb.Checked }
+        $ids += 'JetBrains.Toolbox' | Where-Object { $jetbrainstoolboxcb.Checked }
+        $ids += 'Microsoft.VisualStudioCode' | Where-Object { $vscodecb.Checked }
+        $ids += 'Docker.DockerDesktop' | Where-Object { $dockercb.Checked }
+        $ids += 'PostgresSQL.pgAdmin' | Where-Object { $pgadmin.Checked }
+        $ids += 'Insomnia.Insomnia' | Where-Object { $insomniacb.Checked }
+        $ids += 'OpenJS.NodeJS.LTS' | Where-Object { $nodejscb.Checked }
+        $ids += 'Notepad++.Notepad++' | Where-Object { $notepadcb.Checked }
+        $ids += 'RProject.R' | Where-Object { $rcb.Checked }
+        $ids += 'Posit.RStudio' | Where-Object { $rstudiocb.Checked }
+        $ids += 'Microsoft.WindowsTerminal' | Where-Object { $windowsterminalcb.Checked }
+        $ids += 'Canonical.Ubuntu.2204' | Where-Object { $ubuntu2204cb.Checked }
+        $ids += 'Oracle.JDK.20' | Where-Object { $jdk20cb.Checked }
+        $ids += 'Python.Python.3.9' | Where-Object { $python39cb.Checked }
+        #        $ids += 'PuTTY.PuTTY' | Where-Object { $puttycb.Checked }
+        #        $ids += 'WinSCP.WinSCP' | Where-Object { $winscpcb.Checked }
+        #        $ids += 'Microsoft.Sysinternals.TCPView' | Where-Object { $tcpviewcb.Checked }
+        #        $ids += 'mRemoteNG.mRemoteNG' | Where-Object { $mremotengcb.Checked }
+        #        $ids += 'Famatech.AdvancedIPScanner' | Where-Object { $ipscancb.Checked }
+        #        $ids += 'WiresharkFoundation.Wireshark' | Where-Object { $wiresharkcb.Checked }
 
-    if ($puttycb.Checked -eq $true) {$ids += 'PuTTY.PuTTY'}    
-    if ($winscpcb.Checked -eq $true) {$ids += 'WinSCP.WinSCP'}    
-    if ($tcpviewcb.Checked -eq $true) {$ids += 'Microsoft.Sysinternals.TCPView'}    
-    if ($mremotengcb.Checked -eq $true) {$ids += 'mRemoteNG.mRemoteNG'}    
-    if ($ipscancb.Checked -eq $true) {$ids += 'Famatech.AdvancedIPScanner'}    
-    if ($wiresharkcb.Checked -eq $true) {$ids += 'WiresharkFoundation.Wireshark'}    
+        # Multimedia
+        $ids += 'dotPDNLLC.paintdotnet' | Where-Object { $paintnetcb.Checked } #seems to be broken as the download fails
+        $ids += 'GIMP.GIMP' | Where-Object { $gimpcb.Checked }
+        $ids += 'Inkscape.Inkscape' | Where-Object { $inkscapcb.Checked }
+        $ids += 'VideoLAN.VLC' | Where-Object { $vlc.Checked }
+        $ids += 'Spotify.Spotify' | Where-Object { $spotifycb.Checked }
+        $ids += 'Amazon.Kindle' | Where-Object { $kindlecb.Checked }
+        $ids += 'OBSProject.OBSStudio' | Where-Object { $obscb.Checked }
 
-    if ($vlcplayercb.Checked -eq $true) {$ids += 'VideoLAN.VLC'}    
-    if ($intunecb.Checked -eq $true) {$ids += 'Apple.iTunes'}    
-    if ($obsstudiocb.Checked -eq $true) {$ids += 'OBSProject.OBSStudio'}    
-    if ($sharexcb.Checked -eq $true) {$ids += 'ShareX.ShareX'}    
-    if ($handbreakcb.Checked -eq $true) {$ids += 'HandBrake.HandBrake'}    
-    if ($flameshotcb.Checked -eq $true) {$ids += 'Flameshot.Flameshot'}    
+        # Office
+        $ids += 'Microsoft.OneNote' | Where-Object { $onenotecb.Checked }
+        $ids += 'Microsoft.OneDrive' | Where-Object { $onedrivecb.Checked }
+        $ids += 'Google.Drive' | Where-Object { $googledrivecb.Checked }
+        $ids += 'Dropbox.Dropbox' | Where-Object { $dropboxcb.Checked }
+        $ids += 'Nextcloud.NextcloudDesktop' | Where-Object { $nextcloudcb.Checked }
+        $ids += 'ownCloud.ownCloudDesktop' | Where-Object { $owncloudcb.Checked }
+        $ids += 'Obsidian.Obsidian' | Where-Object { $obsidiancb.Checked }
+        $ids += 'DigitalScholar.Zotero' | Where-Object { $zoterocb.Checked }
+        # Mendeley not available on winget
+        $ids += 'Adobe.Acrobat.Reader.64-bit' | Where-Object { $adobereadercb.Checked }
+        $ids += 'Microsoft.Office' | Where-Object { $microsoftofficecb.Checked }
+        $ids += 'TheDocumentFoundation.LibreOffice' | Where-Object { $libreofficecb.Checked }
+        $ids += 'appmakes.Typora' | Where-Object { $typoracb.Checked }
+        $ids += 'Mozilla.Thunderbird' | Where-Object { $thunderbirdcb.Checked }
+        $ids += 'Toggl.TogglTrack' | Where-Object { $togglcb.Checked } # Does not work
+        $ids += 'MiKTeX.MiKTeX' | Where-Object { $miktexcb.Checked }
+        $ids += 'MiKTeX.MiKTeX' | Where-Object { $pandocguicb.Checked } # PandocGui depends on it
+        $ids += 'JohnMacFarlane.Pandoc' | Where-Object { $pandoccb.Checked }
+        $ids += 'JohnMacFarlane.Pandoc' | Where-Object { $pandocguicb.Checked } # PandocGui depends on it
+        $ids += 'Ombrelin.PandocGui' | Where-Object { $pandocguicb.Checked } # Depends on Pandoc and MiKTeX
 
+        # Games
+        $ids += 'Mojang.MinecraftLauncher' | Where-Object { $minecraftcb.Checked }
+        $ids += 'Valve.Steam' | Where-Object { $steamcb.Checked }
+        $ids += 'Peppy.Osu!' | Where-Object { $osucb.Checked }
 
+        # Security
+        $ids += 'KeePassXCTeam.KeePassXC' | Where-Object { $keepassxccb.Checked }
+        $ids += 'SatoshiLabs.trezor-suite' | Where-Object { $trezorsuitecb.Checked }
+        $ids += 'ExodusMovement.Exodus' | Where-Object { $exoduscb.Checked }
+        $ids += 'Electrum.Electrum' | Where-Object { $electrumcb.Checked }
+        $ids += 'Acronis.CyberProtectHomeOffice' | Where-Object { $acroniscb.Checked }
+        $ids += 'Malwarebytes.Malwarebytes' | Where-Object { $malwarebytescb.Checked }
 
+        # Utilities
+        $ids += 'Microsoft.VCRedist.2015+.x64' | Where-Object { $wingetuicb.Checked } # Microsoft.VCRedist.2015+.x64 needs to be installed before to function correctly as some .dll file is missing
+        $ids += 'SomePythonThings.WingetUIStore' | Where-Object { $wingetuicb.Checked }
+        $ids += 'Chocolatey.Chocolatey' | Where-Object { $chocolateycb.Checked }
+        $ids += 'Chocolatey.ChocolateyGUI' | Where-Object { $chocolateyguicb.Checked }
+        $ids += 'Microsoft.PowerToys' | Where-Object { $powertoyscb.Checked }
+        $ids += 'RARLab.WinRAR' | Where-Object { $winrarcb.Checked }
+        $ids += 'AntibodySoftware.WizTree' | Where-Object { $wiztreecb.Checked }
+        $ids += 'Piriform.Recuva' | Where-Object { $recuvacb.Checked }
 
-
-ForEach ($id in $ids){
-Invoke-Command $install
-}
-
-Write-Host "Done."
-
-} #end try
-
-catch {$outputBox.text = "`nOperation could not be completed"}
-
-} 
-############################################## end functions
-
-function WinGetUninstaller {
-
-    try {
-
-    $winGet = gci "C:\Program Files\WindowsApps" -Recurse -File -ErrorAction SilentlyContinue | Where-Object { $_.name -like "AppInstallerCLI.exe" -or $_.name -like "WinGet.exe" } | Select-Object -ExpandProperty fullname -ErrorAction SilentlyContinue
-
-    # If there are multiple versions, select latest
-    if ($winGet.count -gt 1){
-        $winGet = $winGet[-1]
+        ForEach ($id in $ids | Select-Object -Unique)
+        {
+            if ($Remove)
+            {
+                Invoke-Command $uninstall
+            }
+            else
+            {
+                Invoke-Command $install
+            }
+        }
+        Write-Host "Done."
     }
-    $winGetLoc = [string]((get-item $winGet).Directory.FullName)
+    #end try
 
-    $uninstall = {
-    Write-Host "Removing $uid ..."
-    & "$winGetLoc\winget.exe" uninstall --id=$uid -e --silent 
-    }   
-        
-    $uids=@()
-    if ($chromecb.Checked -eq $true) {$uids += 'Google.Chrome'}
-    if ($firefoxcb.Checked -eq $true) {$uids += 'Mozilla.Firefox'}
-    if ($bravecb.Checked -eq $true) {$uids += 'Brave.Brave'}
-    if ($edgecb.Checked -eq $true) {$uids += 'Microsoft.Edge'}
-
-    ForEach ($uid in $uids){
-    Invoke-Command $uninstall
+    catch
+    {
+        $outputBox.text = "Operation could not be completed"
     }
+}
 
-    Write-Host "Done."
+function Create-GroupBox()
+{
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Text,
+        [Parameter(Mandatory = $true)]
+        [int]$X,
+        [Parameter(Mandatory = $true)]
+        [int]$Y,
+        [Parameter(Mandatory = $true)]
+        [int]$Width,
+        [Parameter(Mandatory = $true)]
+        [int]$Height,
+        [Parameter(Mandatory = $true)]
+        [System.Windows.Forms.Form]$Form
+    )
+    $GroupBox = New-Object System.Windows.Forms.GroupBox
+    $GroupBox.Location = New-Object System.Drawing.Size($X, $Y)
+    $GroupBox.Size = New-Object System.Drawing.Size($Width, $Height)
+    $GroupBox.Text = $Text
+    $Form.Controls.Add($GroupBox)
+    return $GroupBox
+}
 
-    } #end try
-
-    catch {$outputBox.text = "`nOperation could not be completed"}
-
-    } 
+function Create-CheckBox()
+{
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Text,
+        [Parameter(Mandatory = $true)]
+        [int]$X,
+        [Parameter(Mandatory = $true)]
+        [int]$Y,
+        [Parameter(Mandatory = $true)]
+        [int]$Width,
+        [Parameter(Mandatory = $true)]
+        [int]$Height,
+        [Parameter(Mandatory = $true)]
+        [System.Windows.Forms.GroupBox]$Form
+    )
+    $CheckBox = New-Object System.Windows.Forms.CheckBox
+    $CheckBox.Location = New-Object System.Drawing.Size($X, $Y)
+    $CheckBox.Size = New-Object System.Drawing.Size($Width, $Height)
+    $CheckBox.Text = $Text
+    $Form.Controls.Add($CheckBox)
+    return $CheckBox
+}
 ############################################## end functions
-
 ############################################## Start group boxes
-
-   $Browsers = New-Object System.Windows.Forms.GroupBox
-   $Browsers.Location = New-Object System.Drawing.Size(10,10) 
-   $Browsers.size = New-Object System.Drawing.Size(130,250) 
-   $Browsers.text = "Browsers:"
-   $Form.Controls.Add($Browsers) 
-
-   $Comunications = New-Object System.Windows.Forms.GroupBox
-   $Comunications.Location = New-Object System.Drawing.Size(150,10) 
-   $Comunications.size = New-Object System.Drawing.Size(130,250) 
-   $Comunications.text = "Comunications:"
-   $Form.Controls.Add($Comunications) 
-
-   $NetworkTools = New-Object System.Windows.Forms.GroupBox
-   $NetworkTools.Location = New-Object System.Drawing.Size(290,10) 
-   $NetworkTools.size = New-Object System.Drawing.Size(130,250) 
-   $NetworkTools.text = "Network Tools:"
-   $Form.Controls.Add($NetworkTools) 
-
-   $Multimedia = New-Object System.Windows.Forms.GroupBox
-   $Multimedia.Location = New-Object System.Drawing.Size(430,10) 
-   $Multimedia.size = New-Object System.Drawing.Size(130,250) 
-   $Multimedia.text = "Multimedia:"
-   $Form.Controls.Add($Multimedia) 
-
-   $Document = New-Object System.Windows.Forms.GroupBox
-   $Document.Location = New-Object System.Drawing.Size(570,10) 
-   $Document.size = New-Object System.Drawing.Size(130,250) 
-   $Document.text = "Document:"
-   $Form.Controls.Add($Document)
-
-   $Games = New-Object System.Windows.Forms.GroupBox
-   $Games.Location = New-Object System.Drawing.Size(710,10) 
-   $Games.size = New-Object System.Drawing.Size(130,250) 
-   $Games.text = "Games:"
-   $Form.Controls.Add($Games)
-
-   $Utilities = New-Object System.Windows.Forms.GroupBox
-   $Utilities.Location = New-Object System.Drawing.Size(850,10) 
-   $Utilities.size = New-Object System.Drawing.Size(130,250) 
-   $Utilities.text = "Utilities:"
-   $Form.Controls.Add($Utilities)
-
+$Browsers = Create-GroupBox -Text "Browsers:" -X 10 -Y 10 -Width 130 -Height 250 -Form $Form
+$Comunications = Create-GroupBox -Text "Comunications:" -X 150 -Y 10 -Width 140 -Height 250 -Form $Form
+$Development = Create-GroupBox -Text "Development:" -X 300 -Y 10 -Width 140 -Height 250 -Form $Form
+$Multimedia = Create-GroupBox -Text "Multimedia:" -X 450 -Y 10 -Width 140 -Height 250 -Form $Form
+$Office = Create-GroupBox -Text "Office:" -X 600 -Y 10 -Width 140 -Height 250 -Form $Form
+$Games = Create-GroupBox -Text "Games:" -X 750 -Y 10 -Width 140 -Height 250 -Form $Form
+$Security = Create-GroupBox -Text "Security:" -X 900 -Y 10 -Width 140 -Height 250 -Form $Form
+$Utilities = Create-GroupBox -Text "Utilities:" -X 1050 -Y 10 -Width 130 -Height 250 -Form $Form
 ############################################## end group boxes
-
 ############################################## Start Browsers checkboxes
-
-   $chromecb = New-Object System.Windows.Forms.checkbox
-   $chromecb.Location = New-Object System.Drawing.Size(10,20)
-   $chromecb.Size = New-Object System.Drawing.Size(100,20)
-   $chromecb.Text = "Chrome"
-   $chromecb.AutoSize = $True
-   $Browsers.Controls.Add($chromecb)
-
-   $firefoxcb = New-Object System.Windows.Forms.checkbox
-   $firefoxcb.Location = New-Object System.Drawing.Size(10,40)
-   $firefoxcb.Size = New-Object System.Drawing.Size(100,20)
-   $firefoxcb.Text = "Firefox"
-   $Browsers.Controls.Add($firefoxcb)
-
-   $bravecb = New-Object System.Windows.Forms.checkbox
-   $bravecb.Location = New-Object System.Drawing.Size(10,60)
-   $bravecb.Size = New-Object System.Drawing.Size(100,20)
-   $bravecb.Text = "Brave"
-   $Browsers.Controls.Add($bravecb)
-
-   $egdecb = New-Object System.Windows.Forms.checkbox
-   $egdecb.Location = New-Object System.Drawing.Size(10,80)
-   $egdecb.Size = New-Object System.Drawing.Size(100,20)
-   $egdecb.Text = "Edge"
-   $Browsers.Controls.Add($egdecb)
-
-   $torcb = New-Object System.Windows.Forms.checkbox
-   $torcb.Location = New-Object System.Drawing.Size(10,100)
-   $torcb.Size = New-Object System.Drawing.Size(100,20)
-   $torcb.Text = "Tor Browser"
-   $Browsers.Controls.Add($torcb)
-
-   $vivaldicb = New-Object System.Windows.Forms.checkbox
-   $vivaldicb.Location = New-Object System.Drawing.Size(10,120)
-   $vivaldicb.Size = New-Object System.Drawing.Size(100,20)
-   $vivaldicb.Text = "Vivaldi"
-   $Browsers.Controls.Add($vivaldicb)
-
-############################################## End Arch checkboxes
-
-############################################## Start Communications checkboxes 
-
-   $discordcb = New-Object System.Windows.Forms.checkbox
-   $discordcb.Location = New-Object System.Drawing.Size(10,20)
-   $discordcb.Size = New-Object System.Drawing.Size(100,20)
-   $discordcb.Text = "Discord"
-   $discordcb.AutoSize = $True
-   $Comunications.Controls.Add($discordcb)
-
-   $skypecb = New-Object System.Windows.Forms.checkbox
-   $skypecb.Location = New-Object System.Drawing.Size(10,40)
-   $skypecb.Size = New-Object System.Drawing.Size(100,20)
-   $skypecb.Text = "Skype"
-   $skypecb.AutoSize = $True
-   $Comunications.Controls.Add($skypecb)
-
-   $slackcb = New-Object System.Windows.Forms.checkbox
-   $slackcb.Location = New-Object System.Drawing.Size(10,60)
-   $slackcb.Size = New-Object System.Drawing.Size(100,20)
-   $slackcb.Text = "Slack"
-   $slackcb.AutoSize = $True
-   $Comunications.Controls.Add($slackcb)
-
-   $telegramcb = New-Object System.Windows.Forms.checkbox
-   $telegramcb.Location = New-Object System.Drawing.Size(10,80)
-   $telegramcb.Size = New-Object System.Drawing.Size(100,20)
-   $telegramcb.Text = "Telegram"
-   $telegramcb.AutoSize = $True
-   $Comunications.Controls.Add($telegramcb)
-
-   $teamscb = New-Object System.Windows.Forms.checkbox
-   $teamscb.Location = New-Object System.Drawing.Size(10,100)
-   $teamscb.Size = New-Object System.Drawing.Size(100,20)
-   $teamscb.Text = "Teams"
-   $teamscb.AutoSize = $True
-   $Comunications.Controls.Add($teamscb)
-
-   $vibercb = New-Object System.Windows.Forms.checkbox
-   $vibercb.Location = New-Object System.Drawing.Size(10,120)
-   $vibercb.Size = New-Object System.Drawing.Size(100,20)
-   $vibercb.Text = "Viber"
-   $vibercb.AutoSize = $True
-   $Comunications.Controls.Add($vibercb)
-
-   $zoomcb = New-Object System.Windows.Forms.checkbox
-   $zoomcb.Location = New-Object System.Drawing.Size(10,140)
-   $zoomcb.Size = New-Object System.Drawing.Size(100,20)
-   $zoomcb.Text = "Zoom"
-   $zoomcb.AutoSize = $True
-   $Comunications.Controls.Add($zoomcb)
-
-############################################## End Communications checkboxes 
-
-
-############################################## Start Network Tools checkboxes 
-
-   $puttycb = New-Object System.Windows.Forms.checkbox
-   $puttycb.Location = New-Object System.Drawing.Size(10,20)
-   $puttycb.Size = New-Object System.Drawing.Size(100,20)
-   $puttycb.Text = "PuTTy"
-   $puttycb.AutoSize = $True
-   $NetworkTools.Controls.Add($puttycb)
-
-   $winscpcb = New-Object System.Windows.Forms.checkbox
-   $winscpcb.Location = New-Object System.Drawing.Size(10,40)
-   $winscpcb.Size = New-Object System.Drawing.Size(100,20)
-   $winscpcb.Text = "WinSCP"
-   $NetworkTools.Controls.Add($winscpcb)
-
-   $tcpviewcb = New-Object System.Windows.Forms.checkbox
-   $tcpviewcb.Location = New-Object System.Drawing.Size(10,60)
-   $tcpviewcb.Size = New-Object System.Drawing.Size(100,20)
-   $tcpviewcb.Text = "TCP View"
-   $NetworkTools.Controls.Add($tcpviewcb)
-
-   $mremotengcb = New-Object System.Windows.Forms.checkbox
-   $mremotengcb.Location = New-Object System.Drawing.Size(10,80)
-   $mremotengcb.Size = New-Object System.Drawing.Size(100,20)
-   $mremotengcb.Text = "mRemoteNG"
-   $NetworkTools.Controls.Add($mremotengcb)
-
-   $ipscancb = New-Object System.Windows.Forms.checkbox
-   $ipscancb.Location = New-Object System.Drawing.Size(10,100)
-   $ipscancb.Size = New-Object System.Drawing.Size(100,20)
-   $ipscancb.Text = "IP Scanner"
-   $NetworkTools.Controls.Add($ipscancb)
-
-   $wiresharkcb = New-Object System.Windows.Forms.checkbox
-   $wiresharkcb.Location = New-Object System.Drawing.Size(10,120)
-   $wiresharkcb.Size = New-Object System.Drawing.Size(100,20)
-   $wiresharkcb.Text = "WireShark"
-   $NetworkTools.Controls.Add($wiresharkcb)            
-
-############################################## End Network Tools  checkboxes 
-
-
-############################################## Start Multimedia checkboxes 
-
-   $vlcplayercb = New-Object System.Windows.Forms.checkbox
-   $vlcplayercb.Location = New-Object System.Drawing.Size(10,20)
-   $vlcplayercb.Size = New-Object System.Drawing.Size(100,20)
-   $vlcplayercb.Text = "VLC Player"
-   $vlcplayercb.AutoSize = $True
-   $Multimedia.Controls.Add($vlcplayercb)
-
-   $intunecb = New-Object System.Windows.Forms.checkbox
-   $intunecb.Location = New-Object System.Drawing.Size(10,40)
-   $intunecb.Size = New-Object System.Drawing.Size(100,20)
-   $intunecb.Text = "iTunes"
-   $Multimedia.Controls.Add($intunecb)
-
-   $obsstudiocb = New-Object System.Windows.Forms.checkbox
-   $obsstudiocb.Location = New-Object System.Drawing.Size(10,60)
-   $obsstudiocb.Size = New-Object System.Drawing.Size(100,20)
-   $obsstudiocb.Text = "OBS Studio"
-   $Multimedia.Controls.Add($obsstudiocb)
-
-   $sharexcb = New-Object System.Windows.Forms.checkbox
-   $sharexcb.Location = New-Object System.Drawing.Size(10,80)
-   $sharexcb.Size = New-Object System.Drawing.Size(100,20)
-   $sharexcb.Text = "ShareX"
-   $Multimedia.Controls.Add($sharexcb)
-
-   $handbreakcb = New-Object System.Windows.Forms.checkbox
-   $handbreakcb.Location = New-Object System.Drawing.Size(10,100)
-   $handbreakcb.Size = New-Object System.Drawing.Size(100,20)
-   $handbreakcb.Text = "HandBrake"
-   $Multimedia.Controls.Add($handbreakcb)
-
-   $flameshotcb = New-Object System.Windows.Forms.checkbox
-   $flameshotcb.Location = New-Object System.Drawing.Size(10,120)
-   $flameshotcb.Size = New-Object System.Drawing.Size(100,20)
-   $flameshotcb.Text = "FlameShot"
-   $Multimedia.Controls.Add($flameshotcb)
-
-
-
-############################################## End Multimedia checkboxes 
-
-
-
-############################################## Start Document checkboxes 
-############################################## End Document checkboxes 
-
-
-############################################## Start Games checkboxes 
-############################################## End Games checkboxes 
-
-
-############################################## Start Ultilities checkboxes 
-############################################## End Ultilities checkboxes 
-
-
+$bravecb = Create-CheckBox -Text "Brave" -X 10 -Y 20 -Width 120 -Height 20 -Form $Browsers
+$chromecb = Create-CheckBox -Text "Chrome" -X 10 -Y 40 -Width 120 -Height 20 -Form $Browsers
+$firefoxcb = Create-CheckBox -Text "Firefox" -X 10 -Y 60 -Width 120 -Height 20 -Form $Browsers
+$torcb = Create-CheckBox -Text "Tor" -X 10 -Y 80 -Width 120 -Height 20 -Form $Browsers
+$egdecb = Create-CheckBox -Text "Edge" -X 10 -Y 100 -Width 120 -Height 20 -Form $Browsers
+$operacb = Create-CheckBox -Text "Opera" -X 10 -Y 120 -Width 120 -Height 20 -Form $Browsers
+$vivaldicb = Create-CheckBox -Text "Vivaldi" -X 10 -Y 140 -Width 120 -Height 20 -Form $Browsers
+############################################## End Browser checkboxes
+############################################## Start Communications checkboxes
+$telegramcb = Create-CheckBox -Text "Telegram" -X 10 -Y 20 -Width 120 -Height 20 -Form $Comunications
+$whatsappcb = Create-CheckBox -Text "WhatsApp" -X 10 -Y 40 -Width 120 -Height 20 -Form $Comunications
+$slackcb = Create-CheckBox -Text "Slack" -X 10 -Y 60 -Width 120 -Height 20 -Form $Comunications
+$discordcb = Create-CheckBox -Text "Discord" -X 10 -Y 80 -Width 120 -Height 20 -Form $Comunications
+$mattermostcb = Create-CheckBox -Text "Mattermost" -X 10 -Y 100 -Width 120 -Height 20 -Form $Comunications
+$teamspeakcb = Create-CheckBox -Text "TeamSpeak" -X 10 -Y 120 -Width 120 -Height 20 -Form $Comunications
+$zoomcb = Create-CheckBox -Text "Zoom" -X 10 -Y 140 -Width 120 -Height 20 -Form $Comunications
+$skypecb = Create-CheckBox -Text "Skype" -X 10 -Y 160 -Width 120 -Height 20 -Form $Comunications
+$teamscb = Create-CheckBox -Text "Teams" -X 10 -Y 180 -Width 120 -Height 20 -Form $Comunications
+$anydeskcb = Create-CheckBox -Text "AnyDesk" -X 10 -Y 200 -Width 120 -Height 20 -Form $Comunications
+$teamviewercb = Create-CheckBox -Text "TeamViewer" -X 10 -Y 220 -Width 120 -Height 20 -Form $Comunications
+############################################## End Communications checkboxes
+############################################## Start Development checkboxes
+$gitcb = Create-CheckBox -Text "Git" -X 10 -Y 20 -Width 120 -Height 20 -Form $Development
+$forkcb = Create-CheckBox -Text "Fork" -X 10 -Y 40 -Width 120 -Height 20 -Form $Development
+$jetbrainstoolboxcb = Create-CheckBox -Text "JetBrains Toolbox" -X 10 -Y 60 -Width 120 -Height 20 -Form $Development
+$vscodecb = Create-CheckBox -Text "VS Code" -X 10 -Y 80 -Width 120 -Height 20 -Form $Development
+$dockercb = Create-CheckBox -Text "Docker" -X 10 -Y 100 -Width 120 -Height 20 -Form $Development
+$pgadmin = Create-CheckBox -Text "pgAdmin" -X 10 -Y 120 -Width 120 -Height 20 -Form $Development
+$insomniacb = Create-CheckBox -Text "Insomnia" -X 10 -Y 140 -Width 120 -Height 20 -Form $Development
+$nodejscb = Create-CheckBox -Text "NodeJS" -X 10 -Y 160 -Width 120 -Height 20 -Form $Development
+$notepadcb = Create-CheckBox -Text "Notepad++" -X 10 -Y 180 -Width 120 -Height 20 -Form $Development
+$rcb = Create-CheckBox -Text "R" -X 10 -Y 200 -Width 120 -Height 20 -Form $Development
+$rstudiocb = Create-CheckBox -Text "RStudio" -X 10 -Y 220 -Width 120 -Height 20 -Form $Development
+$windowsterminalcb = Create-CheckBox -Text "Windows Terminal" -X 10 -Y 240 -Width 120 -Height 20 -Form $Development
+$ubuntu2204cb = Create-CheckBox -Text "Ubuntu 20.04" -X 10 -Y 260 -Width 120 -Height 20 -Form $Development
+$jdk20cb = Create-CheckBox -Text "JDK 20" -X 10 -Y 280 -Width 120 -Height 20 -Form $Development
+$python39cb = Create-CheckBox -Text "Python 3.9" -X 10 -Y 300 -Width 120 -Height 20 -Form $Development
+############################################## End Development  checkboxes
+############################################## Start Multimedia checkboxes
+$paintnetcb = Create-CheckBox -Text "Paint.NET" -X 10 -Y 20 -Width 120 -Height 20 -Form $Multimedia
+$gimpcb = Create-CheckBox -Text "GIMP" -X 10 -Y 40 -Width 120 -Height 20 -Form $Multimedia
+$inkscapecb = Create-CheckBox -Text "Inkscape" -X 10 -Y 60 -Width 120 -Height 20 -Form $Multimedia
+$vlccb = Create-CheckBox -Text "VLC" -X 10 -Y 80 -Width 120 -Height 20 -Form $Multimedia
+$spotifycb = Create-CheckBox -Text "Spotify" -X 10 -Y 100 -Width 120 -Height 20 -Form $Multimedia
+$kindlecb = Create-CheckBox -Text "Kindle" -X 10 -Y 120 -Width 120 -Height 20 -Form $Multimedia
+$obscb = Create-CheckBox -Text "OBS" -X 10 -Y 140 -Width 120 -Height 20 -Form $Multimedia
+############################################## End Multimedia checkboxes
+############################################## Start Office checkboxes
+$onedrivecb = Create-CheckBox -Text "OneDrive" -X 10 -Y 20 -Width 120 -Height 20 -Form $Office
+$googledrivecb = Create-CheckBox -Text "Google Drive" -X 10 -Y 40 -Width 120 -Height 20 -Form $Office
+$dropboxcb = Create-CheckBox -Text "Dropbox" -X 10 -Y 60 -Width 120 -Height 20 -Form $Office
+$nextcloudcb = Create-CheckBox -Text "Nextcloud" -X 10 -Y 80 -Width 120 -Height 20 -Form $Office
+$owncloudcb = Create-CheckBox -Text "ownCloud" -X 10 -Y 100 -Width 120 -Height 20 -Form $Office
+$obsidiancb = Create-CheckBox -Text "Obsidian" -X 10 -Y 120 -Width 120 -Height 20 -Form $Office
+$zoterocb = Create-CheckBox -Text "Zotero" -X 10 -Y 140 -Width 120 -Height 20 -Form $Office
+$adobereadercb = Create-CheckBox -Text "Adobe Reader" -X 10 -Y 160 -Width 120 -Height 20 -Form $Office
+$microsoftofficecb = Create-CheckBox -Text "Microsoft Office" -X 10 -Y 180 -Width 120 -Height 20 -Form $Office
+$libreofficecb = Create-CheckBox -Text "LibreOffice" -X 10 -Y 200 -Width 120 -Height 20 -Form $Office
+$typoracb = Create-CheckBox -Text "Typora" -X 10 -Y 220 -Width 120 -Height 20 -Form $Office
+$thunderbirdcb = Create-CheckBox -Text "Thunderbird" -X 10 -Y 240 -Width 120 -Height 20 -Form $Office
+$togglcb = Create-CheckBox -Text "Toggl" -X 10 -Y 260 -Width 120 -Height 20 -Form $Office
+$miktexcb = Create-CheckBox -Text "MiKTeX" -X 10 -Y 280 -Width 120 -Height 20 -Form $Office
+$pandoccb = Create-CheckBox -Text "Pandoc" -X 10 -Y 300 -Width 120 -Height 20 -Form $Office
+$pandocguicb = Create-CheckBox -Text "PandocGui" -X 10 -Y 320 -Width 120 -Height 20 -Form $Office
+############################################## End Office checkboxes
+############################################## Start Games checkboxes
+$minecraftcb = Create-CheckBox -Text "Minecraft" -X 10 -Y 20 -Width 120 -Height 20 -Form $Games
+$steamcb = Create-CheckBox -Text "Steam" -X 10 -Y 40 -Width 120 -Height 20 -Form $Games
+$osucb = Create-CheckBox -Text "osu!" -X 10 -Y 60 -Width 120 -Height 20 -Form $Games
+############################################## End Games checkboxes
+############################################## Start Security checkboxes
+$keepassxcb = Create-CheckBox -Text "KeePassXC" -X 10 -Y 20 -Width 120 -Height 20 -Form $Security
+$trezorsuitecb = Create-CheckBox -Text "Trezor Suite" -X 10 -Y 40 -Width 120 -Height 20 -Form $Security
+$exoduscb = Create-CheckBox -Text "Exodus" -X 10 -Y 60 -Width 120 -Height 20 -Form $Security
+$electrumcb = Create-CheckBox -Text "Electrum" -X 10 -Y 80 -Width 120 -Height 20 -Form $Security
+$acroniscb = Create-CheckBox -Text "Acronis" -X 10 -Y 100 -Width 120 -Height 20 -Form $Security
+$malwarebytescb = Create-CheckBox -Text "Malwarebytes" -X 10 -Y 120 -Width 120 -Height 20 -Form $Security
+############################################## End Security checkboxes
+############################################## Start Ultilities checkboxes
+$wingetuicb = Create-CheckBox -Text "WingetUI" -X 10 -Y 20 -Width 120 -Height 20 -Form $Utilities
+$chocolateycb = Create-CheckBox -Text "Chocolatey" -X 10 -Y 40 -Width 120 -Height 20 -Form $Utilities
+$chocolateyguicb = Create-CheckBox -Text "Chocolatey GUI" -X 10 -Y 60 -Width 120 -Height 20 -Form $Utilities
+$powertoyscb = Create-CheckBox -Text "PowerToys" -X 10 -Y 80 -Width 120 -Height 20 -Form $Utilities
+$winrarcb = Create-CheckBox -Text "WinRAR" -X 10 -Y 100 -Width 120 -Height 20 -Form $Utilities
+$wiztreecb = Create-CheckBox -Text "WizTree" -X 10 -Y 120 -Width 120 -Height 20 -Form $Utilities
+$recuvacb = Create-CheckBox -Text "Recuva" -X 10 -Y 140 -Width 120 -Height 20 -Form $Utilities
+############################################## End Ultilities checkboxes
 ############################################## Start buttons
+$submitInstallButton = New-Object System.Windows.Forms.Button
+$submitInstallButton.Cursor = [System.Windows.Forms.Cursors]::Hand
+$submitInstallButton.BackColor = [System.Drawing.Color]::LightGreen
+$submitInstallButton.Location = New-Object System.Drawing.Size(10, 280)
+$submitInstallButton.Size = New-Object System.Drawing.Size(110, 40)
+$submitInstallButton.Text = "Install "
+$submitInstallButton.Add_Click({ WinGetInstaller })
+$Form.Controls.Add($submitInstallButton)
 
-   $submitInstallButton = New-Object System.Windows.Forms.Button 
-   $submitInstallButton.Cursor = [System.Windows.Forms.Cursors]::Hand
-   $submitInstallButton.BackColor = [System.Drawing.Color]::LightGreen
-   $submitInstallButton.Location = New-Object System.Drawing.Size(10,280) 
-   $submitInstallButton.Size = New-Object System.Drawing.Size(110,40) 
-   $submitInstallButton.Text = "Install " 
-   $submitInstallButton.Add_Click({WinGetInstaller}) 
-   $Form.Controls.Add($submitInstallButton) 
-
-   $submitUninstallButton = New-Object System.Windows.Forms.Button 
-   $submitUninstallButton.Cursor = [System.Windows.Forms.Cursors]::Hand
-   $submitUninstallButton.BackColor = [System.Drawing.Color]::LightGreen
-   $submitUninstallButton.Location = New-Object System.Drawing.Size(140,280) 
-   $submitUninstallButton.Size = New-Object System.Drawing.Size(110,40) 
-   $submitUninstallButton.Text = "Uninstall " 
-   $submitUninstallButton.Add_Click({WinGetUninstaller}) 
-   $Form.Controls.Add($submitUninstallButton) 
-
+$submitUninstallButton = New-Object System.Windows.Forms.Button
+$submitUninstallButton.Cursor = [System.Windows.Forms.Cursors]::Hand
+$submitUninstallButton.BackColor = [System.Drawing.Color]::Red
+$submitUninstallButton.Location = New-Object System.Drawing.Size(140, 280)
+$submitUninstallButton.Size = New-Object System.Drawing.Size(110, 40)
+$submitUninstallButton.Text = "Uninstall "
+$submitUninstallButton.Add_Click({ WinGetInstaller $true })
+$Form.Controls.Add($submitUninstallButton)
 ############################################## end buttons
-
-$Form.Add_Shown({$Form.Activate()})
+$Form.Add_Shown({ $Form.Activate() })
 [void] $Form.ShowDialog()
