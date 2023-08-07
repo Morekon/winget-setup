@@ -3,22 +3,24 @@
 [void] [System.Reflection.Assembly]::LoadWithPartialName("PresentationFramework")
 [void] [Reflection.Assembly]::LoadWithPartialName("PresentationCore")
 
-$Form = New-Object System.Windows.Forms.Form
-$Form.Size = New-Object System.Drawing.Size(1200, 500)
-$Form.StartPosition = "CenterScreen" #loads the window in the center of the screen
-$Form.FormBorderStyle = [System.Windows.Forms.FormBorderStyle]::FixedToolWindow #modifies the window border
-$Form.Text = "winget setup GUI" #window description
-$Form.ShowInTaskbar = $true
-$Form.KeyPreview = $true
-$Form.AutoSize = $true
-$Form.FormBorderStyle = 'Fixed3D'
-$Form.MaximizeBox = $false
-$Form.MinimizeBox = $false
-$Form.ControlBox = $true
-$Form.Icon = $Icon
+$Form = New-Object System.Windows.Forms.Form -Property @{
+    AutoSize = $true
+    ControlBox = $true
+#    FormBorderStyle = [System.Windows.Forms.FormBorderStyle]::FixedToolWindow #modifies the window border
+    FormBorderStyle = 'Fixed3D'
+    Icon = $Icon
+    KeyPreview = $true
+    MaximizeBox = $false
+    MinimizeBox = $false
+    Text = 'winget setup GUI' #window description
+    ShowInTaskbar = $true
+    Size = '2000,500'
+    StartPosition = 'CenterScreen' #loads the window in the center of the screen
+}
 
 # TODO automatically install winget if not installed
 # TODO improve UI
+# TODO set icon
 # TODO improve error handling
 ############################################## Start functions
 function WinGetInstaller($Remove)
@@ -212,109 +214,109 @@ function Create-CheckBox()
 }
 ############################################## End functions
 ############################################## Start group boxes
-$Browsers = Create-GroupBox -Text "Browsers:" -X 10 -Y 10 -Width 130 -Height 250 -Form $Form
-$Comunications = Create-GroupBox -Text "Comunications:" -X 150 -Y 10 -Width 140 -Height 250 -Form $Form
-$Development = Create-GroupBox -Text "Development:" -X 300 -Y 10 -Width 140 -Height 250 -Form $Form
-$Multimedia = Create-GroupBox -Text "Multimedia:" -X 450 -Y 10 -Width 140 -Height 250 -Form $Form
-$Office = Create-GroupBox -Text "Office:" -X 600 -Y 10 -Width 140 -Height 250 -Form $Form
-$Games = Create-GroupBox -Text "Games:" -X 750 -Y 10 -Width 140 -Height 250 -Form $Form
-$Security = Create-GroupBox -Text "Security:" -X 900 -Y 10 -Width 140 -Height 250 -Form $Form
-$Utilities = Create-GroupBox -Text "Utilities:" -X 1050 -Y 10 -Width 130 -Height 250 -Form $Form
+$Browsers = Create-GroupBox -Text "Browsers:" -X 10 -Y 10 -Width 200 -Height 350 -Form $Form
+$Comunications = Create-GroupBox -Text "Comunications:" -X 220 -Y 10 -Width 200 -Height 350 -Form $Form
+$Development = Create-GroupBox -Text "Development:" -X 430 -Y 10 -Width 200 -Height 350 -Form $Form
+$Multimedia = Create-GroupBox -Text "Multimedia:" -X 640 -Y 10 -Width 200 -Height 350 -Form $Form
+$Office = Create-GroupBox -Text "Office:" -X 850 -Y 10 -Width 200 -Height 350 -Form $Form
+$Games = Create-GroupBox -Text "Games:" -X 1060 -Y 10 -Width 200 -Height 350 -Form $Form
+$Security = Create-GroupBox -Text "Security:" -X 1270 -Y 10 -Width 200 -Height 350 -Form $Form
+$Utilities = Create-GroupBox -Text "Utilities:" -X 1480 -Y 10 -Width 200 -Height 350 -Form $Form
 ############################################## End group boxes
 ############################################## Start Browsers checkboxes
-$bravecb = Create-CheckBox -Text "Brave" -X 10 -Y 20 -Width 120 -Height 20 -Form $Browsers
-$chromecb = Create-CheckBox -Text "Chrome" -X 10 -Y 40 -Width 120 -Height 20 -Form $Browsers
-$firefoxcb = Create-CheckBox -Text "Firefox" -X 10 -Y 60 -Width 120 -Height 20 -Form $Browsers
-$torcb = Create-CheckBox -Text "Tor" -X 10 -Y 80 -Width 120 -Height 20 -Form $Browsers
-$egdecb = Create-CheckBox -Text "Edge" -X 10 -Y 100 -Width 120 -Height 20 -Form $Browsers
-$operacb = Create-CheckBox -Text "Opera" -X 10 -Y 120 -Width 120 -Height 20 -Form $Browsers
-$vivaldicb = Create-CheckBox -Text "Vivaldi" -X 10 -Y 140 -Width 120 -Height 20 -Form $Browsers
+$bravecb = Create-CheckBox -Text "Brave" -X 10 -Y 20 -Width 190 -Height 20 -Form $Browsers
+$chromecb = Create-CheckBox -Text "Chrome" -X 10 -Y 40 -Width 190 -Height 20 -Form $Browsers
+$firefoxcb = Create-CheckBox -Text "Firefox" -X 10 -Y 60 -Width 190 -Height 20 -Form $Browsers
+$torcb = Create-CheckBox -Text "Tor" -X 10 -Y 80 -Width 190 -Height 20 -Form $Browsers
+$egdecb = Create-CheckBox -Text "Edge" -X 10 -Y 100 -Width 190 -Height 20 -Form $Browsers
+$operacb = Create-CheckBox -Text "Opera" -X 10 -Y 120 -Width 190 -Height 20 -Form $Browsers
+$vivaldicb = Create-CheckBox -Text "Vivaldi" -X 10 -Y 140 -Width 190 -Height 20 -Form $Browsers
 ############################################## End Browser checkboxes
 ############################################## Start Communications checkboxes
-$telegramcb = Create-CheckBox -Text "Telegram" -X 10 -Y 20 -Width 120 -Height 20 -Form $Comunications
-$whatsappcb = Create-CheckBox -Text "WhatsApp" -X 10 -Y 40 -Width 120 -Height 20 -Form $Comunications
-$slackcb = Create-CheckBox -Text "Slack" -X 10 -Y 60 -Width 120 -Height 20 -Form $Comunications
-$discordcb = Create-CheckBox -Text "Discord" -X 10 -Y 80 -Width 120 -Height 20 -Form $Comunications
-$mattermostcb = Create-CheckBox -Text "Mattermost" -X 10 -Y 100 -Width 120 -Height 20 -Form $Comunications
-$teamspeakcb = Create-CheckBox -Text "TeamSpeak" -X 10 -Y 120 -Width 120 -Height 20 -Form $Comunications
-$zoomcb = Create-CheckBox -Text "Zoom" -X 10 -Y 140 -Width 120 -Height 20 -Form $Comunications
-$skypecb = Create-CheckBox -Text "Skype" -X 10 -Y 160 -Width 120 -Height 20 -Form $Comunications
-$teamscb = Create-CheckBox -Text "Teams" -X 10 -Y 180 -Width 120 -Height 20 -Form $Comunications
-$anydeskcb = Create-CheckBox -Text "AnyDesk" -X 10 -Y 200 -Width 120 -Height 20 -Form $Comunications
-$teamviewercb = Create-CheckBox -Text "TeamViewer" -X 10 -Y 220 -Width 120 -Height 20 -Form $Comunications
+$telegramcb = Create-CheckBox -Text "Telegram" -X 10 -Y 20 -Width 190 -Height 20 -Form $Comunications
+$whatsappcb = Create-CheckBox -Text "WhatsApp" -X 10 -Y 40 -Width 190 -Height 20 -Form $Comunications
+$slackcb = Create-CheckBox -Text "Slack" -X 10 -Y 60 -Width 190 -Height 20 -Form $Comunications
+$discordcb = Create-CheckBox -Text "Discord" -X 10 -Y 80 -Width 190 -Height 20 -Form $Comunications
+$mattermostcb = Create-CheckBox -Text "Mattermost" -X 10 -Y 100 -Width 190 -Height 20 -Form $Comunications
+$teamspeakcb = Create-CheckBox -Text "TeamSpeak" -X 10 -Y 120 -Width 190 -Height 20 -Form $Comunications
+$zoomcb = Create-CheckBox -Text "Zoom" -X 10 -Y 140 -Width 190 -Height 20 -Form $Comunications
+$skypecb = Create-CheckBox -Text "Skype" -X 10 -Y 160 -Width 190 -Height 20 -Form $Comunications
+$teamscb = Create-CheckBox -Text "Teams" -X 10 -Y 180 -Width 190 -Height 20 -Form $Comunications
+$anydeskcb = Create-CheckBox -Text "AnyDesk" -X 10 -Y 200 -Width 190 -Height 20 -Form $Comunications
+$teamviewercb = Create-CheckBox -Text "TeamViewer" -X 10 -Y 220 -Width 190 -Height 20 -Form $Comunications
 ############################################## End Communications checkboxes
 ############################################## Start Development checkboxes
-$gitcb = Create-CheckBox -Text "Git" -X 10 -Y 20 -Width 120 -Height 20 -Form $Development
-$forkcb = Create-CheckBox -Text "Fork" -X 10 -Y 40 -Width 120 -Height 20 -Form $Development
-$jetbrainstoolboxcb = Create-CheckBox -Text "JetBrains Toolbox" -X 10 -Y 60 -Width 120 -Height 20 -Form $Development
-$vscodecb = Create-CheckBox -Text "VS Code" -X 10 -Y 80 -Width 120 -Height 20 -Form $Development
-$dockercb = Create-CheckBox -Text "Docker" -X 10 -Y 100 -Width 120 -Height 20 -Form $Development
-$pgadmin = Create-CheckBox -Text "pgAdmin" -X 10 -Y 120 -Width 120 -Height 20 -Form $Development
-$insomniacb = Create-CheckBox -Text "Insomnia" -X 10 -Y 140 -Width 120 -Height 20 -Form $Development
-$nodejscb = Create-CheckBox -Text "NodeJS" -X 10 -Y 160 -Width 120 -Height 20 -Form $Development
-$notepadcb = Create-CheckBox -Text "Notepad++" -X 10 -Y 180 -Width 120 -Height 20 -Form $Development
-$rcb = Create-CheckBox -Text "R" -X 10 -Y 200 -Width 120 -Height 20 -Form $Development
-$rstudiocb = Create-CheckBox -Text "RStudio" -X 10 -Y 220 -Width 120 -Height 20 -Form $Development
-$windowsterminalcb = Create-CheckBox -Text "Windows Terminal" -X 10 -Y 240 -Width 120 -Height 20 -Form $Development
-$ubuntu2204cb = Create-CheckBox -Text "Ubuntu 20.04" -X 10 -Y 260 -Width 120 -Height 20 -Form $Development
-$jdk20cb = Create-CheckBox -Text "JDK 20" -X 10 -Y 280 -Width 120 -Height 20 -Form $Development
-$python39cb = Create-CheckBox -Text "Python 3.9" -X 10 -Y 300 -Width 120 -Height 20 -Form $Development
+$gitcb = Create-CheckBox -Text "Git" -X 10 -Y 20 -Width 190 -Height 20 -Form $Development
+$forkcb = Create-CheckBox -Text "Fork" -X 10 -Y 40 -Width 190 -Height 20 -Form $Development
+$jetbrainstoolboxcb = Create-CheckBox -Text "JetBrains Toolbox" -X 10 -Y 60 -Width 190 -Height 20 -Form $Development
+$vscodecb = Create-CheckBox -Text "VS Code" -X 10 -Y 80 -Width 190 -Height 20 -Form $Development
+$dockercb = Create-CheckBox -Text "Docker" -X 10 -Y 100 -Width 190 -Height 20 -Form $Development
+$pgadmin = Create-CheckBox -Text "pgAdmin" -X 10 -Y 120 -Width 190 -Height 20 -Form $Development
+$insomniacb = Create-CheckBox -Text "Insomnia" -X 10 -Y 140 -Width 190 -Height 20 -Form $Development
+$nodejscb = Create-CheckBox -Text "NodeJS" -X 10 -Y 160 -Width 190 -Height 20 -Form $Development
+$notepadcb = Create-CheckBox -Text "Notepad++" -X 10 -Y 180 -Width 190 -Height 20 -Form $Development
+$rcb = Create-CheckBox -Text "R" -X 10 -Y 200 -Width 190 -Height 20 -Form $Development
+$rstudiocb = Create-CheckBox -Text "RStudio" -X 10 -Y 220 -Width 190 -Height 20 -Form $Development
+$windowsterminalcb = Create-CheckBox -Text "Windows Terminal" -X 10 -Y 240 -Width 190 -Height 20 -Form $Development
+$ubuntu2204cb = Create-CheckBox -Text "Ubuntu 20.04" -X 10 -Y 260 -Width 190 -Height 20 -Form $Development
+$jdk20cb = Create-CheckBox -Text "JDK 20" -X 10 -Y 280 -Width 190 -Height 20 -Form $Development
+$python39cb = Create-CheckBox -Text "Python 3.9" -X 10 -Y 300 -Width 190 -Height 20 -Form $Development
 ############################################## End Development  checkboxes
 ############################################## Start Multimedia checkboxes
-$paintnetcb = Create-CheckBox -Text "Paint.NET" -X 10 -Y 20 -Width 120 -Height 20 -Form $Multimedia
-$gimpcb = Create-CheckBox -Text "GIMP" -X 10 -Y 40 -Width 120 -Height 20 -Form $Multimedia
-$inkscapecb = Create-CheckBox -Text "Inkscape" -X 10 -Y 60 -Width 120 -Height 20 -Form $Multimedia
-$vlccb = Create-CheckBox -Text "VLC" -X 10 -Y 80 -Width 120 -Height 20 -Form $Multimedia
-$spotifycb = Create-CheckBox -Text "Spotify" -X 10 -Y 100 -Width 120 -Height 20 -Form $Multimedia
-$kindlecb = Create-CheckBox -Text "Kindle" -X 10 -Y 120 -Width 120 -Height 20 -Form $Multimedia
-$obscb = Create-CheckBox -Text "OBS" -X 10 -Y 140 -Width 120 -Height 20 -Form $Multimedia
+$paintnetcb = Create-CheckBox -Text "Paint.NET" -X 10 -Y 20 -Width 190 -Height 20 -Form $Multimedia
+$gimpcb = Create-CheckBox -Text "GIMP" -X 10 -Y 40 -Width 190 -Height 20 -Form $Multimedia
+$inkscapecb = Create-CheckBox -Text "Inkscape" -X 10 -Y 60 -Width 190 -Height 20 -Form $Multimedia
+$vlccb = Create-CheckBox -Text "VLC" -X 10 -Y 80 -Width 190 -Height 20 -Form $Multimedia
+$spotifycb = Create-CheckBox -Text "Spotify" -X 10 -Y 100 -Width 190 -Height 20 -Form $Multimedia
+$kindlecb = Create-CheckBox -Text "Kindle" -X 10 -Y 120 -Width 190 -Height 20 -Form $Multimedia
+$obscb = Create-CheckBox -Text "OBS" -X 10 -Y 140 -Width 190 -Height 20 -Form $Multimedia
 ############################################## End Multimedia checkboxes
 ############################################## Start Office checkboxes
-$onedrivecb = Create-CheckBox -Text "OneDrive" -X 10 -Y 20 -Width 120 -Height 20 -Form $Office
-$googledrivecb = Create-CheckBox -Text "Google Drive" -X 10 -Y 40 -Width 120 -Height 20 -Form $Office
-$dropboxcb = Create-CheckBox -Text "Dropbox" -X 10 -Y 60 -Width 120 -Height 20 -Form $Office
-$nextcloudcb = Create-CheckBox -Text "Nextcloud" -X 10 -Y 80 -Width 120 -Height 20 -Form $Office
-$owncloudcb = Create-CheckBox -Text "ownCloud" -X 10 -Y 100 -Width 120 -Height 20 -Form $Office
-$obsidiancb = Create-CheckBox -Text "Obsidian" -X 10 -Y 120 -Width 120 -Height 20 -Form $Office
-$zoterocb = Create-CheckBox -Text "Zotero" -X 10 -Y 140 -Width 120 -Height 20 -Form $Office
-$adobereadercb = Create-CheckBox -Text "Adobe Reader" -X 10 -Y 160 -Width 120 -Height 20 -Form $Office
-$microsoftofficecb = Create-CheckBox -Text "Microsoft Office" -X 10 -Y 180 -Width 120 -Height 20 -Form $Office
-$libreofficecb = Create-CheckBox -Text "LibreOffice" -X 10 -Y 200 -Width 120 -Height 20 -Form $Office
-$typoracb = Create-CheckBox -Text "Typora" -X 10 -Y 220 -Width 120 -Height 20 -Form $Office
-$thunderbirdcb = Create-CheckBox -Text "Thunderbird" -X 10 -Y 240 -Width 120 -Height 20 -Form $Office
-$togglcb = Create-CheckBox -Text "Toggl" -X 10 -Y 260 -Width 120 -Height 20 -Form $Office
-$miktexcb = Create-CheckBox -Text "MiKTeX" -X 10 -Y 280 -Width 120 -Height 20 -Form $Office
-$pandoccb = Create-CheckBox -Text "Pandoc" -X 10 -Y 300 -Width 120 -Height 20 -Form $Office
-$pandocguicb = Create-CheckBox -Text "PandocGui" -X 10 -Y 320 -Width 120 -Height 20 -Form $Office
+$onedrivecb = Create-CheckBox -Text "OneDrive" -X 10 -Y 20 -Width 190 -Height 20 -Form $Office
+$googledrivecb = Create-CheckBox -Text "Google Drive" -X 10 -Y 40 -Width 190 -Height 20 -Form $Office
+$dropboxcb = Create-CheckBox -Text "Dropbox" -X 10 -Y 60 -Width 190 -Height 20 -Form $Office
+$nextcloudcb = Create-CheckBox -Text "Nextcloud" -X 10 -Y 80 -Width 190 -Height 20 -Form $Office
+$owncloudcb = Create-CheckBox -Text "ownCloud" -X 10 -Y 100 -Width 190 -Height 20 -Form $Office
+$obsidiancb = Create-CheckBox -Text "Obsidian" -X 10 -Y 120 -Width 190 -Height 20 -Form $Office
+$zoterocb = Create-CheckBox -Text "Zotero" -X 10 -Y 140 -Width 190 -Height 20 -Form $Office
+$adobereadercb = Create-CheckBox -Text "Adobe Reader" -X 10 -Y 160 -Width 190 -Height 20 -Form $Office
+$microsoftofficecb = Create-CheckBox -Text "Microsoft Office" -X 10 -Y 180 -Width 190 -Height 20 -Form $Office
+$libreofficecb = Create-CheckBox -Text "LibreOffice" -X 10 -Y 200 -Width 190 -Height 20 -Form $Office
+$typoracb = Create-CheckBox -Text "Typora" -X 10 -Y 220 -Width 190 -Height 20 -Form $Office
+$thunderbirdcb = Create-CheckBox -Text "Thunderbird" -X 10 -Y 240 -Width 190 -Height 20 -Form $Office
+$togglcb = Create-CheckBox -Text "Toggl" -X 10 -Y 260 -Width 190 -Height 20 -Form $Office
+$miktexcb = Create-CheckBox -Text "MiKTeX" -X 10 -Y 280 -Width 190 -Height 20 -Form $Office
+$pandoccb = Create-CheckBox -Text "Pandoc" -X 10 -Y 300 -Width 190 -Height 20 -Form $Office
+$pandocguicb = Create-CheckBox -Text "PandocGui" -X 10 -Y 320 -Width 190 -Height 20 -Form $Office
 ############################################## End Office checkboxes
 ############################################## Start Games checkboxes
-$minecraftcb = Create-CheckBox -Text "Minecraft" -X 10 -Y 20 -Width 120 -Height 20 -Form $Games
-$steamcb = Create-CheckBox -Text "Steam" -X 10 -Y 40 -Width 120 -Height 20 -Form $Games
-$osucb = Create-CheckBox -Text "osu!" -X 10 -Y 60 -Width 120 -Height 20 -Form $Games
+$minecraftcb = Create-CheckBox -Text "Minecraft" -X 10 -Y 20 -Width 190 -Height 20 -Form $Games
+$steamcb = Create-CheckBox -Text "Steam" -X 10 -Y 40 -Width 190 -Height 20 -Form $Games
+$osucb = Create-CheckBox -Text "osu!" -X 10 -Y 60 -Width 190 -Height 20 -Form $Games
 ############################################## End Games checkboxes
 ############################################## Start Security checkboxes
-$keepassxcb = Create-CheckBox -Text "KeePassXC" -X 10 -Y 20 -Width 120 -Height 20 -Form $Security
-$trezorsuitecb = Create-CheckBox -Text "Trezor Suite" -X 10 -Y 40 -Width 120 -Height 20 -Form $Security
-$exoduscb = Create-CheckBox -Text "Exodus" -X 10 -Y 60 -Width 120 -Height 20 -Form $Security
-$electrumcb = Create-CheckBox -Text "Electrum" -X 10 -Y 80 -Width 120 -Height 20 -Form $Security
-$acroniscb = Create-CheckBox -Text "Acronis" -X 10 -Y 100 -Width 120 -Height 20 -Form $Security
-$malwarebytescb = Create-CheckBox -Text "Malwarebytes" -X 10 -Y 120 -Width 120 -Height 20 -Form $Security
+$keepassxcb = Create-CheckBox -Text "KeePassXC" -X 10 -Y 20 -Width 190 -Height 20 -Form $Security
+$trezorsuitecb = Create-CheckBox -Text "Trezor Suite" -X 10 -Y 40 -Width 190 -Height 20 -Form $Security
+$exoduscb = Create-CheckBox -Text "Exodus" -X 10 -Y 60 -Width 190 -Height 20 -Form $Security
+$electrumcb = Create-CheckBox -Text "Electrum" -X 10 -Y 80 -Width 190 -Height 20 -Form $Security
+$acroniscb = Create-CheckBox -Text "Acronis" -X 10 -Y 100 -Width 190 -Height 20 -Form $Security
+$malwarebytescb = Create-CheckBox -Text "Malwarebytes" -X 10 -Y 120 -Width 190 -Height 20 -Form $Security
 ############################################## End Security checkboxes
 ############################################## Start Ultilities checkboxes
-$wingetuicb = Create-CheckBox -Text "WingetUI" -X 10 -Y 20 -Width 120 -Height 20 -Form $Utilities
-$chocolateycb = Create-CheckBox -Text "Chocolatey" -X 10 -Y 40 -Width 120 -Height 20 -Form $Utilities
-$chocolateyguicb = Create-CheckBox -Text "Chocolatey GUI" -X 10 -Y 60 -Width 120 -Height 20 -Form $Utilities
-$powertoyscb = Create-CheckBox -Text "PowerToys" -X 10 -Y 80 -Width 120 -Height 20 -Form $Utilities
-$winrarcb = Create-CheckBox -Text "WinRAR" -X 10 -Y 100 -Width 120 -Height 20 -Form $Utilities
-$wiztreecb = Create-CheckBox -Text "WizTree" -X 10 -Y 120 -Width 120 -Height 20 -Form $Utilities
-$recuvacb = Create-CheckBox -Text "Recuva" -X 10 -Y 140 -Width 120 -Height 20 -Form $Utilities
+$wingetuicb = Create-CheckBox -Text "WingetUI" -X 10 -Y 20 -Width 190 -Height 20 -Form $Utilities
+$chocolateycb = Create-CheckBox -Text "Chocolatey" -X 10 -Y 40 -Width 190 -Height 20 -Form $Utilities
+$chocolateyguicb = Create-CheckBox -Text "Chocolatey GUI" -X 10 -Y 60 -Width 190 -Height 20 -Form $Utilities
+$powertoyscb = Create-CheckBox -Text "PowerToys" -X 10 -Y 80 -Width 190 -Height 20 -Form $Utilities
+$winrarcb = Create-CheckBox -Text "WinRAR" -X 10 -Y 100 -Width 190 -Height 20 -Form $Utilities
+$wiztreecb = Create-CheckBox -Text "WizTree" -X 10 -Y 120 -Width 190 -Height 20 -Form $Utilities
+$recuvacb = Create-CheckBox -Text "Recuva" -X 10 -Y 140 -Width 190 -Height 20 -Form $Utilities
 ############################################## End Ultilities checkboxes
 ############################################## Start buttons
 $submitInstallButton = New-Object System.Windows.Forms.Button
 $submitInstallButton.Cursor = [System.Windows.Forms.Cursors]::Hand
 $submitInstallButton.BackColor = [System.Drawing.Color]::LightGreen
-$submitInstallButton.Location = New-Object System.Drawing.Size(10, 280)
-$submitInstallButton.Size = New-Object System.Drawing.Size(110, 40)
+$submitInstallButton.Location = New-Object System.Drawing.Size(10, 400)
+$submitInstallButton.Size = New-Object System.Drawing.Size(100, 45)
 $submitInstallButton.Text = "Install "
 $submitInstallButton.Add_Click({ WinGetInstaller })
 $Form.Controls.Add($submitInstallButton)
@@ -322,8 +324,8 @@ $Form.Controls.Add($submitInstallButton)
 $submitUninstallButton = New-Object System.Windows.Forms.Button
 $submitUninstallButton.Cursor = [System.Windows.Forms.Cursors]::Hand
 $submitUninstallButton.BackColor = [System.Drawing.Color]::Red
-$submitUninstallButton.Location = New-Object System.Drawing.Size(140, 280)
-$submitUninstallButton.Size = New-Object System.Drawing.Size(110, 40)
+$submitUninstallButton.Location = New-Object System.Drawing.Size(120, 400)
+$submitUninstallButton.Size = New-Object System.Drawing.Size(100, 45)
 $submitUninstallButton.Text = "Uninstall "
 $submitUninstallButton.Add_Click({ WinGetInstaller $true })
 $Form.Controls.Add($submitUninstallButton)
