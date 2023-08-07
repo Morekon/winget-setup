@@ -7,14 +7,14 @@ $Form = New-Object System.Windows.Forms.Form
 $Form.Size = New-Object System.Drawing.Size(1200, 500)
 $Form.StartPosition = "CenterScreen" #loads the window in the center of the screen
 $Form.FormBorderStyle = [System.Windows.Forms.FormBorderStyle]::FixedToolWindow #modifies the window border
-$Form.Text = "winget setup" #window description
-$Form.ShowInTaskbar = $True
-$Form.KeyPreview = $True
-$Form.AutoSize = $True
+$Form.Text = "winget setup GUI" #window description
+$Form.ShowInTaskbar = $true
+$Form.KeyPreview = $true
+$Form.AutoSize = $true
 $Form.FormBorderStyle = 'Fixed3D'
-$Form.MaximizeBox = $False
-$Form.MinimizeBox = $False
-$Form.ControlBox = $True
+$Form.MaximizeBox = $false
+$Form.MinimizeBox = $false
+$Form.ControlBox = $true
 $Form.Icon = $Icon
 
 # TODO automatically install winget if not installed
@@ -210,7 +210,7 @@ function Create-CheckBox()
     $Form.Controls.Add($CheckBox)
     return $CheckBox
 }
-############################################## end functions
+############################################## End functions
 ############################################## Start group boxes
 $Browsers = Create-GroupBox -Text "Browsers:" -X 10 -Y 10 -Width 130 -Height 250 -Form $Form
 $Comunications = Create-GroupBox -Text "Comunications:" -X 150 -Y 10 -Width 140 -Height 250 -Form $Form
@@ -220,7 +220,7 @@ $Office = Create-GroupBox -Text "Office:" -X 600 -Y 10 -Width 140 -Height 250 -F
 $Games = Create-GroupBox -Text "Games:" -X 750 -Y 10 -Width 140 -Height 250 -Form $Form
 $Security = Create-GroupBox -Text "Security:" -X 900 -Y 10 -Width 140 -Height 250 -Form $Form
 $Utilities = Create-GroupBox -Text "Utilities:" -X 1050 -Y 10 -Width 130 -Height 250 -Form $Form
-############################################## end group boxes
+############################################## End group boxes
 ############################################## Start Browsers checkboxes
 $bravecb = Create-CheckBox -Text "Brave" -X 10 -Y 20 -Width 120 -Height 20 -Form $Browsers
 $chromecb = Create-CheckBox -Text "Chrome" -X 10 -Y 40 -Width 120 -Height 20 -Form $Browsers
@@ -327,6 +327,6 @@ $submitUninstallButton.Size = New-Object System.Drawing.Size(110, 40)
 $submitUninstallButton.Text = "Uninstall "
 $submitUninstallButton.Add_Click({ WinGetInstaller $true })
 $Form.Controls.Add($submitUninstallButton)
-############################################## end buttons
+############################################## End buttons
 $Form.Add_Shown({ $Form.Activate() })
 [void] $Form.ShowDialog()
